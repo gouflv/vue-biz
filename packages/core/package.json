@@ -1,0 +1,32 @@
+{
+  "name": "@vue-biz/core",
+  "version": "1.0.0",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "@vueuse/core": "^14.1.0",
+    "lodash-es": "^4.17.22",
+    "obug": "^2.1.1"
+  },
+  "peerDependencies": {
+    "axios": "^1.13.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "axios": "^1.13.2",
+    "typescript": "^5.9.3",
+    "utility-types": "^3.11.0",
+    "vue": "^3.5.26"
+  }
+}
