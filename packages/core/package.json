@@ -11,6 +11,7 @@
     "src"
   ],
   "scripts": {
+    "test": "vitest",
     "type-check": "tsc --noEmit",
     "format": "prettier --write src/"
   },
