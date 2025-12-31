@@ -59,27 +59,27 @@ export function useList<Data = unknown, Query = unknown>(
   async function fetch() {
     if (!enabled.value) return
 
+    // Abort previous request if exists
+    abortController.value?.abort()
+
+    // Create new AbortController for this request
+    const controller = new AbortController()
+    abortController.value = controller
+
+    isPending.value = true
+    error.value = null
+
+    const params: ListFetchFnParams<Query> = {
+      pager: {
+        current: current.value,
+        pageSize: pageSize.value,
+      },
+      query: query.value,
+    }
+
+    log('fetching', { params })
+
     try {
-      // Abort previous request if exists
-      abortController.value?.abort()
-
-      // Create new AbortController for this request
-      const controller = new AbortController()
-      abortController.value = controller
-
-      isPending.value = true
-      error.value = null
-
-      const params: ListFetchFnParams<Query> = {
-        pager: {
-          current: current.value,
-          pageSize: pageSize.value,
-        },
-        query: query.value,
-      }
-
-      log('fetching', { params })
-
       const pageData = await props.fetchFn({
         params,
         config: { signal: controller.signal },
@@ -89,17 +89,17 @@ export function useList<Data = unknown, Query = unknown>(
       if (!controller.signal.aborted) {
         data.value = isArray(pageData.items) ? pageData.items : []
         total.value = isNumber(pageData.total) ? pageData.total : 0
+        isPending.value = false
 
         log('fetched', { data: data.value, total: total.value })
       }
     } catch (e) {
-      // Ignore AbortError
-      if ((e as Error).name !== 'AbortError') {
+      // Only handle errors if this request wasn't aborted
+      if (!controller.signal.aborted) {
         error.value = e as Error
+        isPending.value = false
         console.error(e)
       }
-    } finally {
-      isPending.value = false
     }
   }
 

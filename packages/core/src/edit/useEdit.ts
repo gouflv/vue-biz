@@ -34,20 +34,20 @@ export function useEdit<FormData = unknown, Params = FormData>(
       throw new Error('fetchFn is not provided')
     }
 
+    // Abort previous request if exists
+    fetchAbortController.value?.abort()
+
+    // Create new AbortController for this request
+    const controller = new AbortController()
+    fetchAbortController.value = controller
+
+    isFetching.value = true
+    isFetched.value = false
+    error.value = null
+
+    log('fetching', { params })
+
     try {
-      // Abort previous request if exists
-      fetchAbortController.value?.abort()
-
-      // Create new AbortController for this request
-      const controller = new AbortController()
-      fetchAbortController.value = controller
-
-      isFetching.value = true
-      isFetched.value = false
-      error.value = null
-
-      log('fetching', { params })
-
       const result = await props.fetchFn({
         params,
         config: { signal: controller.signal },
@@ -59,15 +59,15 @@ export function useEdit<FormData = unknown, Params = FormData>(
 
         data.value = result as FormData
         isFetched.value = true
+        isFetching.value = false
       }
     } catch (e) {
-      // Ignore AbortError
-      if ((e as Error).name !== 'AbortError') {
+      // Only handle errors if this request wasn't aborted
+      if (!controller.signal.aborted) {
         error.value = e as Error
+        isFetching.value = false
         console.error(e)
       }
-    } finally {
-      isFetching.value = false
     }
   }
 
