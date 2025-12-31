@@ -1,0 +1,26 @@
+{
+  "name": "@vue-biz/tdesign",
+  "version": "1.0.0",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "tdesign-icons-vue-next": "^0.4.1",
+    "tdesign-vue-next": "^1.17.3"
+  },
+  "peerDependencies": {
+    "@vue-biz/core": "^1.0.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@vue-biz/core": "file:../core",
+    "typescript": "^5.9.3",
+    "vue": "^3.5.26"
+  }
+}
