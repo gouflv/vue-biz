@@ -14,7 +14,7 @@
       </div>
       <div class="flex flex-none gap-2">
         <Button type="submit">筛选</Button>
-        <Button type="reset" theme="default">重置</Button>
+        <Button v-if="showReset" type="reset" theme="default">重置</Button>
       </div>
     </Form>
   </div>
@@ -27,9 +27,11 @@ withDefaults(
   defineProps<{
     data: any
     labelWidth?: string
+    showReset?: boolean
   }>(),
   {
     labelWidth: '80px',
+    showReset: true,
   },
 )
 
