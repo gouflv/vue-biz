@@ -9,13 +9,11 @@ export function useMutation<Params = unknown>(props: UseMutationProps<Params>) {
 
   const isPending = ref(false)
 
-  const abortController = ref<AbortController | null>(null)
-
+  /**
+   * Will ignore new call when a mutation is in progress
+   */
   async function mutate(params: Params) {
     if (isPending.value) return
-
-    abortController.value?.abort()
-    abortController.value = new AbortController()
     isPending.value = true
     error.value = null
 
@@ -26,7 +24,7 @@ export function useMutation<Params = unknown>(props: UseMutationProps<Params>) {
 
       await props.mutationFn({
         params,
-        config: { signal: abortController.value.signal },
+        config: {},
       })
       props.onSuccess?.()
     } catch (e) {
@@ -35,7 +33,6 @@ export function useMutation<Params = unknown>(props: UseMutationProps<Params>) {
       console.error(e)
     } finally {
       isPending.value = false
-      abortController.value = null
     }
   }
 

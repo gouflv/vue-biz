@@ -26,38 +26,54 @@ export function useEdit<FormData = unknown, Params = FormData>(
     return cloneDeep(toValue(props.initialData) ?? {}) as FormData
   }
 
+  /**
+   * Will abort previous request if exists
+   */
   async function fetch(params?: Params) {
     if (!props.fetchFn) {
       throw new Error('fetchFn is not provided')
     }
 
-    fetchAbortController.value?.abort()
-    fetchAbortController.value = new AbortController()
-    isFetching.value = true
-    isFetched.value = false
-    error.value = null
-
     try {
+      // Abort previous request if exists
+      fetchAbortController.value?.abort()
+
+      // Create new AbortController for this request
+      const controller = new AbortController()
+      fetchAbortController.value = controller
+
+      isFetching.value = true
+      isFetched.value = false
+      error.value = null
+
       log('fetching', { params })
 
       const result = await props.fetchFn({
         params,
-        config: { signal: fetchAbortController.value.signal },
+        config: { signal: controller.signal },
       })
 
-      log('fetched', result)
+      // Only update state if this request wasn't aborted
+      if (!controller.signal.aborted) {
+        log('fetched', result)
 
-      data.value = result as FormData
-      isFetched.value = true
+        data.value = result as FormData
+        isFetched.value = true
+      }
     } catch (e) {
-      error.value = e as Error
-      console.error(e)
+      // Ignore AbortError
+      if ((e as Error).name !== 'AbortError') {
+        error.value = e as Error
+        console.error(e)
+      }
     } finally {
       isFetching.value = false
-      fetchAbortController.value = null
     }
   }
 
+  /**
+   * Will ignore new call when a mutation is in progress
+   */
   async function mutate() {
     if (!props.mutationFn) {
       throw new Error('mutationFn is not provided')

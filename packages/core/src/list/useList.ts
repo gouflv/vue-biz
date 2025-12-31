@@ -53,12 +53,20 @@ export function useList<Data = unknown, Query = unknown>(
 
   const abortController = ref<AbortController | null>(null)
 
+  /**
+   * Will abort previous request if exists
+   */
   async function fetch() {
     if (!enabled.value) return
 
     try {
+      // Abort previous request if exists
       abortController.value?.abort()
-      abortController.value = new AbortController()
+
+      // Create new AbortController for this request
+      const controller = new AbortController()
+      abortController.value = controller
+
       isPending.value = true
       error.value = null
 
@@ -74,19 +82,24 @@ export function useList<Data = unknown, Query = unknown>(
 
       const pageData = await props.fetchFn({
         params,
-        config: { signal: abortController.value.signal },
+        config: { signal: controller.signal },
       })
 
-      data.value = isArray(pageData.items) ? pageData.items : []
-      total.value = isNumber(pageData.total) ? pageData.total : 0
+      // Only update state if this request wasn't aborted
+      if (!controller.signal.aborted) {
+        data.value = isArray(pageData.items) ? pageData.items : []
+        total.value = isNumber(pageData.total) ? pageData.total : 0
 
-      log('fetched', { data: data.value, total: total.value })
+        log('fetched', { data: data.value, total: total.value })
+      }
     } catch (e) {
-      error.value = e as Error
-      console.error(e)
+      // Ignore AbortError
+      if ((e as Error).name !== 'AbortError') {
+        error.value = e as Error
+        console.error(e)
+      }
     } finally {
       isPending.value = false
-      abortController.value = null
     }
   }
 

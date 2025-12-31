@@ -28,9 +28,7 @@ describe('useMutation - Basic functionality', () => {
     expect(mockMutationFn).toHaveBeenCalledTimes(1)
     expect(mockMutationFn).toHaveBeenCalledWith({
       params: testParams,
-      config: expect.objectContaining({
-        signal: expect.any(AbortSignal),
-      }),
+      config: {},
     })
   })
 
@@ -191,47 +189,6 @@ describe('useMutation - Concurrent mutations', () => {
     resolveFn!(undefined)
     await firstMutate
     await flushPromises()
-  })
-})
-
-describe('useMutation - Request cancellation', () => {
-  let mockMutationFn: any
-
-  beforeEach(() => {
-    mockMutationFn = vi.fn()
-  })
-
-  afterEach(() => {
-    vi.clearAllMocks()
-  })
-
-  it('should pass AbortSignal to mutationFn', async () => {
-    mockMutationFn.mockResolvedValue(undefined)
-    const mutation = useMutation({ mutationFn: mockMutationFn })
-    await mutation.mutate({ test: 'data' })
-    await flushPromises()
-    expect(mockMutationFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        config: expect.objectContaining({
-          signal: expect.any(AbortSignal),
-        }),
-      }),
-    )
-  })
-
-  it('should create new AbortController for each mutation', async () => {
-    const signals: AbortSignal[] = []
-    mockMutationFn.mockImplementation(({ config }) => {
-      signals.push(config.signal)
-      return Promise.resolve(undefined)
-    })
-    const mutation = useMutation({ mutationFn: mockMutationFn })
-    await mutation.mutate({ test: 'first' })
-    await flushPromises()
-    await mutation.mutate({ test: 'second' })
-    await flushPromises()
-    expect(signals).toHaveLength(2)
-    expect(signals[0]).not.toBe(signals[1])
   })
 })
 
