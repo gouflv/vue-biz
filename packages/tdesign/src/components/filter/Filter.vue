@@ -9,7 +9,7 @@
       @reset="emit('reset')"
       class="flex gap-0 items-start"
     >
-      <div class="flex flex-1 flex-wrap gap-y-3">
+      <div :class="twMerge('flex flex-1 flex-wrap gap-4', contentClass)">
         <slot />
       </div>
       <div class="flex flex-none gap-2">
@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { twMerge } from 'tailwind-merge'
 import { Button, Form } from 'tdesign-vue-next'
 
 withDefaults(
@@ -28,6 +29,7 @@ withDefaults(
     data: any
     labelWidth?: string
     showReset?: boolean
+    contentClass?: string
   }>(),
   {
     labelWidth: '80px',
