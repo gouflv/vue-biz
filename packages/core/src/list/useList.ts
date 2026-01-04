@@ -1,15 +1,6 @@
-import { injectLocal, provideLocal, watchDebounced, watchImmediate } from '@vueuse/core'
-import { isArray, isNumber } from 'lodash-es'
-import {
-  computed,
-  onMounted,
-  onScopeDispose,
-  ref,
-  toValue,
-  watch,
-  type InjectionKey,
-  type Ref,
-} from 'vue'
+import { injectLocal, provideLocal, watchImmediate } from '@vueuse/core'
+import { isArray, isEqual, isNumber } from 'lodash-es'
+import { computed, onScopeDispose, ref, toValue, watch, type InjectionKey, type Ref } from 'vue'
 import { debug } from '../shared/debug'
 import type { ListFetchFnParams, UseListProps, UseListReturn } from './type'
 
@@ -103,27 +94,25 @@ export function useList<Data = unknown, Query = unknown>(
     }
   }
 
-  function reset() {
+  async function reset() {
     current.value = 0
-    fetch()
+    await fetch()
   }
 
-  // Initial fetch
-  onMounted(fetch)
+  watch(
+    [enabled, current, pageSize, query],
+    (_, oldValues) => {
+      if (!enabled.value) return
 
-  // Trigger fetch when enabled changes
-  watch(enabled, fetch)
-
-  // Trigger fetch when current changes
-  watch(current, fetch)
-
-  // Trigger reset when pageSize or query changes
-  watchDebounced(
-    [pageSize, query],
-    () => {
-      reset()
+      const [oldEnabled, oldCurrent, oldPageSize, oldQuery] = oldValues
+      // Trigger reset when pageSize or query changes
+      if (oldPageSize !== pageSize.value || !isEqual(oldQuery, query.value)) {
+        reset()
+      } else {
+        fetch()
+      }
     },
-    { debounce: 50, maxWait: 200, deep: true },
+    { immediate: true, deep: true },
   )
 
   onScopeDispose(() => {

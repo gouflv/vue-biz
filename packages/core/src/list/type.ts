@@ -46,7 +46,7 @@ export type UseListReturn<Data = unknown> = {
   pageSize: Ref<number>
   total: Ref<number>
   refresh: () => Promise<void>
-  reset: () => void
+  reset: () => Promise<void>
   provide: (key?: InjectionKey<UseListReturn<Data>>) => void
 }
 
