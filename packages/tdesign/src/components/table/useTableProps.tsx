@@ -11,9 +11,14 @@ export function useTable<T = unknown>(
   options: {
     rowKey?: string
     height?: Ref<number>
+    pagination?: boolean
+    paginationHeight?: number
   },
 ) {
   const rowKey = options.rowKey || 'id'
+  const height = options.height
+  const showPager = options.pagination ?? true
+  const paginationHeight = options.paginationHeight || PAGINATION_HEIGHT
 
   const pagination = usePaginationProps(list)
 
@@ -50,11 +55,11 @@ export function useTable<T = unknown>(
         rowKey,
         data: list.data.value,
         loading: list.isPending.value,
-        maxHeight: options.height ? options.height.value - PAGINATION_HEIGHT : undefined,
+        maxHeight: height ? height.value - (showPager ? paginationHeight : 0) : undefined,
         hover: true,
-        pagination: {
+        pagination: showPager && {
           ...pagination.value,
-          totalContent: totalContent,
+          totalContent,
         },
         ...tableSelectionProps.value,
       }) as TableProps,
