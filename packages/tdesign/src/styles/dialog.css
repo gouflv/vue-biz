@@ -1,7 +1,7 @@
 .t-dialog {
-  @apply p-4;
+  @apply p-4!;
 }
 
 .t-dialog__body {
-  @apply overflow-hidden;
+  @apply overflow-hidden!;
 }
