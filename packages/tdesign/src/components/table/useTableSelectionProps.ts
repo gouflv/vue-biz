@@ -7,17 +7,18 @@ export function useTableSelectionProps<T>(rowKey = 'id') {
 
   const selectedKeys = computed(() => selection.value.map((it: any) => it[rowKey]))
 
-  function onSelectChange(selectedRowKeys: (string | number)[], options: SelectOptions<T>) {
+  function onSelectChange(selectedRowKeys: Array<string | number>, options: SelectOptions<any>) {
     selection.value = clone(options.selectedRowData)
   }
 
-  const tableProps = computed(() => {
-    return {
-      rowSelectionType: 'multiple',
-      selectedRowKeys: selectedKeys.value,
-      onSelectChange,
-    } as Partial<TableProps>
-  })
+  const tableProps = computed(
+    () =>
+      ({
+        rowSelectionType: 'multiple',
+        selectedRowKeys: selectedKeys.value,
+        onSelectChange,
+      }) satisfies Partial<TableProps<any>>,
+  )
 
   return {
     selection,
