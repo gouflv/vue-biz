@@ -2,6 +2,11 @@
   "name": "@vue-biz/tdesign",
   "version": "1.0.1",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gouflv/vue-biz.git",
+    "directory": "packages/tdesign"
+  },
   "exports": {
     ".": {
       "import": "./src/index.ts",
