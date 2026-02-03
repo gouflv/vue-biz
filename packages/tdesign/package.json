@@ -1,6 +1,7 @@
 {
   "name": "@vue-biz/tdesign",
   "version": "1.0.1",
+  "type": "module",
   "exports": {
     ".": {
       "import": "./src/index.ts",
