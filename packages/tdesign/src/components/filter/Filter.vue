@@ -1,23 +1,24 @@
 <template>
-  <div class="mb-2 pb-5 border-b-0 border-gray-100">
-    <Form
-      :data="data"
-      layout="inline"
-      :label-width="labelWidth"
-      autocomplete="off"
-      @submit="emit('submit')"
-      @reset="emit('reset')"
-      class="flex gap-0 items-start"
-    >
-      <div :class="twMerge('flex flex-1 flex-wrap gap-4', contentClass)">
-        <slot />
-      </div>
-      <div class="flex flex-none gap-2">
+  <Form
+    :data="data"
+    layout="inline"
+    label-width="80px"
+    autocomplete="off"
+    @submit="emit('submit')"
+    @reset="emit('reset')"
+    class="flex gap-0 items-start"
+    v-bind="$attrs"
+  >
+    <div :class="twMerge('flex flex-1 flex-wrap gap-4', contentClass)">
+      <slot />
+    </div>
+    <div v-if="actions" class="flex flex-none gap-2">
+      <slot name="actions">
         <Button type="submit">筛选</Button>
-        <Button v-if="showReset" type="reset" theme="default">重置</Button>
-      </div>
-    </Form>
-  </div>
+        <Button type="reset" theme="default">重置</Button>
+      </slot>
+    </div>
+  </Form>
 </template>
 
 <script setup lang="ts">
@@ -27,18 +28,17 @@ import { Button, Form } from 'tdesign-vue-next'
 withDefaults(
   defineProps<{
     data: any
-    labelWidth?: string
-    showReset?: boolean
     contentClass?: string
+    actions?: boolean
   }>(),
   {
     labelWidth: '80px',
-    showReset: true,
+    actions: true,
   },
 )
 
 const emit = defineEmits<{
-  (e: 'submit'): void
-  (e: 'reset'): void
+  submit: []
+  reset: []
 }>()
 </script>
