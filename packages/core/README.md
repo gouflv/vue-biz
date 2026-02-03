@@ -2,6 +2,24 @@
 
 基于 Vue 3 和 Axios 的业务逻辑封装库，提供列表查询、表单编辑、数据变更等常见业务场景的解决方案。
 
+## ⚠️ 使用要求
+
+本包发布的是 **ESM 格式的 TypeScript 原始代码**，使用前请确保你的项目满足以下条件：
+
+- ✅ 使用 **Vite** 作为构建工具
+- ✅ 支持 TypeScript（建议 5.0+）
+- ✅ 使用 ESM 模块系统（`"type": "module"`）
+
+Vite 会自动处理 TypeScript 转译，通常无需额外配置。如果遇到问题，可以在 `vite.config.ts` 中添加：
+
+```typescript
+export default {
+  optimizeDeps: {
+    include: ['@vue-biz/core'],
+  },
+}
+```
+
 ## 特性
 
 - 🚀 开箱即用的业务场景 Composables
